@@ -14,10 +14,9 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-DIST_DIR = Path(__file__).parent / "frontend" / "dist"
+from pyfarm.config import get_settings
 
-API_URL = os.environ.get("PYFARM_API_URL", "http://localhost:8002")
-AUTH_URL = os.environ.get("PYFARM_AUTH_URL", "http://localhost:8001")
+DIST_DIR = Path(__file__).parent / "frontend" / "dist"
 
 app = FastAPI(title="pyfarm-dashboard", docs_url=None, redoc_url=None)
 
@@ -29,7 +28,11 @@ async def health() -> JSONResponse:
 
 @app.get("/config.json")
 async def config() -> JSONResponse:
-    return JSONResponse({"apiUrl": API_URL, "authUrl": AUTH_URL})
+    settings = get_settings()
+    return JSONResponse({
+        "apiUrl": str(settings.pyfarm_api_url),
+        "authUrl": str(settings.auth_url),
+    })
 
 
 # Mount static assets (JS/CSS bundles) if the dist folder exists.
@@ -51,10 +54,11 @@ async def spa_fallback(full_path: str) -> FileResponse:
 def main() -> None:
     import uvicorn
 
+    settings = get_settings()
     uvicorn.run(
         "server:app",
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", "8003")),
+        port=settings.port,
         reload=False,
     )
 
