@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "pyfarm-dashboard"
+version = "0.1.0"
+description = "Web dashboard for pyfarm control system"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.95,<0.96",
+    "uvicorn[standard]>=0.20,<0.21",
+    "httpx>=0.23,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx",
+]
+
+[project.scripts]
+pyfarm-dashboard = "pyfarm_dashboard.server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
